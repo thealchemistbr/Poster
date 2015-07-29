@@ -16,6 +16,8 @@ namespace Poster
 
                 AppSettingsReader cfgReader = new AppSettingsReader();
 
+                string _UseProxy = cfgReader.GetValue("UseProxy", typeof(string)).ToString();
+
                 var auth = new SingleUserAuthorizer
                 {
                     CredentialStore = new SingleUserInMemoryCredentialStore
@@ -27,10 +29,13 @@ namespace Poster
                     }
                 };
 
-                auth.Proxy = new WebProxy(cfgReader.GetValue("ProxyAddress", typeof(string)).ToString());
-                auth.Proxy.Credentials = new NetworkCredential(
-                    cfgReader.GetValue("ProxyUser", typeof(string)).ToString(),
-                    cfgReader.GetValue("ProxyPass", typeof(string)).ToString());
+                if (_UseProxy.Equals("1"))
+                {
+                    auth.Proxy = new WebProxy(cfgReader.GetValue("ProxyAddress", typeof(string)).ToString());
+                    auth.Proxy.Credentials = new NetworkCredential(
+                        cfgReader.GetValue("ProxyUser", typeof(string)).ToString(),
+                        cfgReader.GetValue("ProxyPass", typeof(string)).ToString());
+                }
 
                 var twitterContext = new TwitterContext(auth);
 
